@@ -1,7 +1,7 @@
 LXC_OS=$1
 PASSWORD=$2
 PORT=$3
-OS_LIST="alpine archlinux centos debian fedora kali ubuntu"
+OS_LIST="alpine archlinux centos debian kali ubuntu"
 
 configure_dns_host() {
     if [ -L /etc/resolv.conf ]; then
@@ -293,7 +293,6 @@ main() {
     alpine) setup_alpine ;;
     centos) setup_centos ;;
     debian|ubuntu) setup_debian ;;
-    fedora) setup_fedora ;;
     kali) setup_kali ;;
     esac
 

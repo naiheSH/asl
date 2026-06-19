@@ -65,7 +65,7 @@ configuration() {
     . "$MODPATH/config.conf"
 
     BASE_DIR="/data"
-    CONTAINER_DIR="${BASE_DIR}/${RURIMA_LXC_OS}"
+    CONTAINER_DIR="${BASE_DIR}/${RURIMA_LXC_OS}-${RURIMA_LXC_OS_VERSION}"
     sed -i "s|^CONTAINER_DIR=.*|CONTAINER_DIR=$CONTAINER_DIR|" "$MODPATH/config.conf"
 
     SUPPORT=$(sed -nE 's/^OS_LIST="([^"]+)"/\1/p' "$MODPATH/setup/setup.sh")
@@ -97,6 +97,9 @@ automatic() {
     if [[ $? != 0 ]]; then
         ui_print "- Download failed. Attempting to download the root filesystem using the fallback source ${RURIMA_LXC_MIRROR_FALLBACK}..."
         rurima lxc pull -n -m ${RURIMA_LXC_MIRROR_FALLBACK} -o ${RURIMA_LXC_OS} -v ${RURIMA_LXC_OS_VERSION} -s "$CONTAINER_DIR"
+        if [[ $? != 0 ]]; then
+            abort "- Failed to download rootfs from both mirrors. Please check network or change OS version in config.conf"
+        fi
     fi
 
     ui_print "- Starting the chroot environment to perform automated installation..."

@@ -10,7 +10,7 @@ fi
 MODULEID="asl"
 BASE_DIR="/data"
 BACKUP_DIR="/data"
-OS_LIST=("ubuntu" "debian" "archlinux" "alpine" "centos" "fedora" "kali")
+OS_LIST=("ubuntu" "debian" "archlinux" "alpine" "centos" "kali")
 
 echoRgb() {
     local message="$1"

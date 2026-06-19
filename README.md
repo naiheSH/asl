@@ -11,26 +11,16 @@ I just bumped rurima to newest version, if there's any issue, please report.
 - archlinux
   - `current`
 - alpine
-  - 3.20
   - `edge`
 - centos
   - `9-Stream`
 - debian
   - `bookworm`
-  - bullseye
-  - buster
-  - trixie
-- fedora
-  - 39
-  - 40
-  - `41`
 - kali
   - `current`
 - ubuntu
-  - focal
-  - `jammy`
-  - noble
-  - `oracular`
+  - `noble` (24.04 LTS)
+  - `resolute` (26.04 LTS)
 
 </details>
 

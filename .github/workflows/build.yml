@@ -59,6 +59,30 @@ jobs:
           echo "build_time=$(TZ=Asia/Shanghai date '+%Y%m%d%H%M')" | tee -a $GITHUB_ENV
 
       - uses: actions/checkout@v4
+
+      - name: Update binaries
+        run: |
+          XBIN="system/xbin"
+
+          # Update rurima (includes ruri)
+          RURIMA_TAG=$(curl -sL https://api.github.com/repos/Moe-hacker/rurima/releases/latest | jq -r .tag_name)
+          echo "Updating rurima to ${RURIMA_TAG}"
+          curl -Lo "${XBIN}/rurima" "https://github.com/Moe-hacker/rurima/releases/download/${RURIMA_TAG}/rurima-aarch64"
+          chmod +x "${XBIN}/rurima"
+          ln -sf rurima "${XBIN}/ruri"
+
+          # Update rurima-dbg
+          curl -Lo "${XBIN}/rurima-dbg" "https://github.com/Moe-hacker/rurima/releases/download/${RURIMA_TAG}/rurima-dbg-aarch64" || true
+          chmod +x "${XBIN}/rurima-dbg" 2>/dev/null || true
+
+          # Update curl-static
+          CURL_TAG=$(curl -sL https://api.github.com/repos/stunnel/static-curl/releases/latest | jq -r .tag_name)
+          echo "Updating curl-static to ${CURL_TAG}"
+          curl -Lo "${XBIN}/curl-static" "https://github.com/stunnel/static-curl/releases/download/${CURL_TAG}/curl-linux-aarch64-${CURL_TAG##v}"
+          chmod +x "${XBIN}/curl-static"
+
+          echo "rurima=${RURIMA_TAG}, curl-static=${CURL_TAG}" | tee -a $GITHUB_STEP_SUMMARY
+
       - name: Build-Release
         run: |
           sudo apt update
@@ -67,23 +91,24 @@ jobs:
           container_zip() {
             local os=$1
             local version=$2
+            local label=${3:-${version}}
 
             sed -i "s/^RURIMA_LXC_OS=.*/RURIMA_LXC_OS=${os}/g" config.conf
             sed -i "s/^RURIMA_LXC_OS_VERSION=.*/RURIMA_LXC_OS_VERSION=${version}/g" config.conf
-            sed -i "s#^CONTAINER_DIR=.*#CONTAINER_DIR=/data/${os}#g" config.conf
+            sed -i "s#^CONTAINER_DIR=.*#CONTAINER_DIR=/data/${os}-${version}#g" config.conf
 
-            zip -r "../asl-${os}-${version}.zip" . -x "*.git/*" -x ".github/*"
+            zip -r "../asl-${os}-${label}.zip" . -x "*.git/*" -x ".github/*"
 
-            echo "asl-${os}-${version}.zip"
+            echo "asl-${os}-${label}.zip"
           }
 
           container_zip "archlinux" "current"
           container_zip "alpine" "edge"
           container_zip "centos" "9-Stream"
           container_zip "debian" "bookworm"
-          container_zip "fedora" "42"
           container_zip "kali" "current"
-          container_zip "ubuntu" "oracular"
+          container_zip "ubuntu" "noble" "24.04"
+          container_zip "ubuntu" "resolute" "26.04"
 
       - name: Release
         uses: softprops/action-gh-release@v2

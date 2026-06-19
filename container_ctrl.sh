@@ -22,7 +22,7 @@ ruristart() {
     ruriumount
 
     case "$RURIMA_LXC_OS" in
-        archlinux|centos|fedora)
+        archlinux|centos)
             START_SERVICES="servicectl start sshd"
             # you can opt for other startup commands It is not mandatory
             # e.g. /usr/sbin/sshd
